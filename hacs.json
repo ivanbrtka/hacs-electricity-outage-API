@@ -1,0 +1,11 @@
+{
+  "name": "Hello World",
+  "description": "A simple 'Hello World' integration",
+  "domain": "hello_world",
+  "codeowners": ["@ivanbrtka"],
+  "documentation": "https://github.com/ivanbrtka/hacs-integration-test",
+  "requirements": [],
+  "homeassistant": "2021.12.0",
+  "version": "1.0.0",
+  "issue_tracker": "https://github.com/ivanbrtka/hacs-integration-test/issues"
+}
