@@ -82,6 +82,7 @@ def get_next_outage_date(latitude, longitude, start):
             response.raise_for_status()
 
             outage_data_json = json.loads(response.text)
+            _LOGGER.warning(f"Data: {outage_data_json}")
 
             if outage_data_json:
                 if start:
@@ -95,7 +96,6 @@ def get_next_outage_date(latitude, longitude, start):
                 return None
         
         except Exception as e:
-            _LOGGER.warning(f"Data: {outage_data_json}")
             _LOGGER.error("Error fetching power outage data: %s", e)
 '''
     # Fetch new data from API 
