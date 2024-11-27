@@ -7,7 +7,7 @@ from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
 _LOGGER = logging.getLogger(__name__)
 
 # Basic sensor setup
-async def async_setup(hass, config, async_add_entities, discovery_info=None):
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     
     # Use GPS data from Home Assistant config data
     latitude = hass.config.latitude
@@ -43,7 +43,7 @@ class PowerOutageSensor(SensorEntity):
         return self._attributes
 
     # Fetch new data from API 
-    def update(self):
+    def async_update(self):
         
         # URL of power outage data API and reverse GPS Lookup API
         REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self._latitude}&lon={self._longtitude}&zoom=18&format=jsonv2"
