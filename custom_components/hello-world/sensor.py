@@ -20,6 +20,7 @@ class PowerOutageSensor(SensorEntity):
 
     # Define basic attributes
     def __init__(self, latitude, longitude):
+        _LOGGER.debug("Initializing PowerOutageSensor with latitude=%s, longitude=%s", latitude, longitude)
         self._latitude = latitude
         self._longitude = longitude
         self._state = None
@@ -40,11 +41,6 @@ class PowerOutageSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return self._attributes
-
-    # Unique ID
-    @property
-    def unique_id(self):
-        return f"power_outages_sensor"
 
     # Fetch new data from API 
     def update(self):
