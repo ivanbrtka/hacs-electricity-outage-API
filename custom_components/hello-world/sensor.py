@@ -40,22 +40,7 @@ class PowerOutageSensorStart(SensorEntity):
     _attr_state_class = None
 
     def update(self):     
-        self._attr_native_value = get_next_outage_date(latitude, longitude, True)      
-
-
-# Sensor used for representing next electricity outage
-class PowerOutageSensorEnd(SensorEntity):
-
-    # Define basic attributes
-    _attr_name = "Next Power Outage End Date"
-    _attr_device_class = SensorDeviceClass.DATE
-    _attr_state_class = None
-
-    def update(self):
-        self._attr_native_value = get_next_outage_date(latitude, longitude, False)      
-
-def get_next_outage_date(latitude, longitude, start):
-    # URL of power outage data API and reverse GPS Lookup API
+        # URL of power outage data API and reverse GPS Lookup API
         REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
@@ -82,21 +67,64 @@ def get_next_outage_date(latitude, longitude, start):
             response.raise_for_status()
 
             outage_data_json = json.loads(response.text)
-            _LOGGER.warning(f"Data: {outage_data_json}")
 
             if outage_data_json:
-                if start:
-                    next_electricity_outage = outage_data_json[0]['realStart']
-                else:
-                    next_electricity_outage = outage_data_json[0]['realEnd']
-                    
-                dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
-                return dt
-            else:
-                return None
+                next_electricity_outage_start = outage_data_json[0]['realStart']
+                self._attr_native_value = datetime.strptime(next_electricity_outage_start, '%Y-%m-%dT%H:%M:%S%z')
+                
         
         except Exception as e:
             _LOGGER.error("Error fetching power outage data: %s", e)
+            self._state = "Error"         
+
+
+# Sensor used for representing next electricity outage
+class PowerOutageSensorEnd(SensorEntity):
+
+    # Define basic attributes
+    _attr_name = "Next Power Outage End Date"
+    _attr_device_class = SensorDeviceClass.DATE
+    _attr_state_class = None
+
+    def update(self):
+        # URL of power outage data API and reverse GPS Lookup API
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
+        OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
+
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
+            gps_data_json = json.loads(gps_data.text)
+
+            postcode = gps_data_json['address']['postcode']
+            city = gps_data_json['address']['village']
+            postcode = postcode.replace(" ", "")
+
+            home_location_params = {
+                "data": {
+                    "OBEC":f"{city}",
+                    "PSC":f"{postcode}",
+                    "ULICA":"",
+                    "CISLO_DOMU":"",
+                    "EIC":"",
+                    "CISLO_ELEKTROMERA":""  
+                    }
+                }
+            response = requests.post(OUTAGE_API_URL, json=home_location_params, headers=headers, timeout=10)
+            response.raise_for_status()
+
+            outage_data_json = json.loads(response.text)
+
+            if outage_data_json:
+                next_electricity_outage_end = outage_data_json[0]['realEnd']
+                self._attr_native_value = datetime.strptime(next_electricity_outage_end, '%Y-%m-%dT%H:%M:%S%z')
+                
+        
+        except Exception as e:
+            _LOGGER.error("Error fetching power outage data: %s", e)
+            self._state = "Error"      
+
+
 '''
     # Fetch new data from API 
     def update(self):
