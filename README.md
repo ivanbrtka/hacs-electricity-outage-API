@@ -14,7 +14,7 @@ Add the following to your `configuration.yaml`:
 
 ```yaml
 sensor:
-  - platform: my_power_outages
+  - platform: power_outages
     latitude: 48.1486
     longitude: 17.1077
 ```
