@@ -4,6 +4,6 @@ from homeassistant.helpers.typing import ConfigType
 DOMAIN = "power_outages"
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
-    """Set up the power_outages integration."""
-    hass.data[DOMAIN] = {}  # Uložíme stav pre integráciu (voliteľné)
+    """Set up the power outages integration."""
+    hass.helpers.discovery.load_platform("sensor", DOMAIN, {}, config)
     return True
