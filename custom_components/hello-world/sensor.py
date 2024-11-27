@@ -32,8 +32,8 @@ def setup_platform(
 class PowerOutageSensor(SensorEntity):
 
     # Use GPS data from Home Assistant config data
-    _latitude = 17.41
-    _longitude = 15.23
+    _latitude = 48.818372
+    _longitude = 17.792674
 
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
@@ -69,10 +69,13 @@ class PowerOutageSensor(SensorEntity):
             response.raise_for_status()
 
             outage_data_json = json.loads(response.text)
+            dt = datetime(2019,1,29,1,2,3)
+            self._attr_native_value = dt
 
             if outage_data_json:
                 next_electricity_outage_start = outage_data_json[0]['realStart']
-                self._attr_native_value = dt = datetime.strptime(next_electricity_outage_start, '%Y-%m-%dT%H:%M:%S%z')
+                dt = datetime.strptime(next_electricity_outage_start, '%Y-%m-%dT%H:%M:%S%z')
+                self._attr_native_value = dt
             else:
                 self._attr_native_value = None
         
