@@ -13,8 +13,6 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN="power_outages"
-latitude = 0
-longitude = 0
 
 # Basic sensor setup
 def setup_platform(
@@ -28,8 +26,8 @@ def setup_platform(
     latitude = hass.config.latitude
     longitude = hass.config.longitude
 
-    add_entities([PowerOutageSensorStart()])
-    add_entities([PowerOutageSensorEnd()])
+    add_entities([PowerOutageSensorStart(latitude, longitude)])
+    add_entities([PowerOutageSensorEnd(latitude, longitude)])
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensorStart(SensorEntity):
@@ -41,7 +39,7 @@ class PowerOutageSensorStart(SensorEntity):
 
     def update(self):     
         # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self.latitude}&lon={self.longitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
         try:
@@ -88,7 +86,7 @@ class PowerOutageSensorEnd(SensorEntity):
 
     def update(self):
         # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self.latitude}&lon={self.longitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
         try:
