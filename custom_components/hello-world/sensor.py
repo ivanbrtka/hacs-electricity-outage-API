@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 import requests, logging, json
 
-from __future__ import annotations
-
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
