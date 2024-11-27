@@ -38,7 +38,7 @@ class PowerOutageSensor(SensorEntity):
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
     _attr_device_class = SensorDeviceClass.DATE
-    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_state_class = None
 
     def update(self):
         
