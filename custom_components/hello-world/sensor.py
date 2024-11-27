@@ -33,7 +33,7 @@ class PowerOutageSensor(SensorEntity):
 
     # Use GPS data from Home Assistant config data
     _latitude = 48.818372
-    _longtitude = 17.792674
+    _longtitude = 17.992674
 
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
