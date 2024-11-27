@@ -26,24 +26,43 @@ def setup_platform(
     latitude = hass.config.latitude
     longitude = hass.config.longitude
 
-    add_entities([PowerOutageSensor()])
+    add_entities([PowerOutageSensorStart()])
+    add_entities([PowerOutageSensorEnd()])
 
 # Sensor used for representing next electricity outage
-class PowerOutageSensor(SensorEntity):
+class PowerOutageSensorStart(SensorEntity):
 
     # Use GPS data from Home Assistant config data
     _latitude = 48.818372
-    _longtitude = 17.992674
+    _longtitude = 17.792674
 
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
 
+    def update(self):     
+        self._attr_native_value = get_next_outage_date(self._latitude, self._longtitude, True)      
+
+
+# Sensor used for representing next electricity outage
+class PowerOutageSensorEnd(SensorEntity):
+
+    # Use GPS data from Home Assistant config data
+    _latitude = 48.818372
+    _longtitude = 17.792674
+
+    # Define basic attributes
+    _attr_name = "Next Power Outage End Date"
+    _attr_device_class = SensorDeviceClass.DATE
+    _attr_state_class = None
+
     def update(self):
-        
-        # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self._latitude}&lon={self._longtitude}&zoom=18&format=jsonv2"
+        self._attr_native_value = get_next_outage_date(self._latitude, self._longtitude, False)      
+
+def get_next_outage_date(latitude, longtitude, start):
+    # URL of power outage data API and reverse GPS Lookup API
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longtitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
         try:
@@ -69,19 +88,20 @@ class PowerOutageSensor(SensorEntity):
             response.raise_for_status()
 
             outage_data_json = json.loads(response.text)
-            dt = datetime(2019,1,29,1,2,3)
-            self._attr_native_value = dt
 
             if outage_data_json:
-                next_electricity_outage_start = outage_data_json[0]['realStart']
-                dt = datetime.strptime(next_electricity_outage_start, '%Y-%m-%dT%H:%M:%S%z')
-                self._attr_native_value = dt
+                if start:
+                    next_electricity_outage = outage_data_json[0]['realStart']
+                else:
+                    next_electricity_outage = outage_data_json[0]['realEnd']
+                    
+                dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
+                return dt
             else:
-                self._attr_native_value = None
+                return None
         
         except Exception as e:
             _LOGGER.error("Error fetching power outage data: %s", e)
-            self._state = "Error"
 '''
     # Fetch new data from API 
     def update(self):
