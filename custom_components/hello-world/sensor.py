@@ -38,6 +38,7 @@ class PowerOutageSensorStart(SensorEntity):
     _attr_state_class = None
 
     def __init__(self, latitude, longitude):
+        super().__init__()
         self.latitude = latitude
         self.longitude = longitude
         self._attr_native_value = None
@@ -90,6 +91,7 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_state_class = None
 
     def __init__(self, latitude, longitude):
+        super().__init__()
         self.latitude = latitude
         self.longitude = longitude
         self._attr_native_value = None
