@@ -32,8 +32,8 @@ def setup_platform(
 class PowerOutageSensor(SensorEntity):
 
     # Use GPS data from Home Assistant config data
-    latitude = 17.41
-    longitude = 15.23
+    _latitude = 17.41
+    _longitude = 15.23
 
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
