@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN="power_outages"
 latitude = 0
-longtitude = 0
+longitude = 0
 
 # Basic sensor setup
 def setup_platform(
@@ -26,7 +26,7 @@ def setup_platform(
     
     # Use GPS data from Home Assistant config data
     latitude = hass.config.latitude
-    longtitude = hass.config.longtitude
+    longitude = hass.config.longitude
 
     add_entities([PowerOutageSensorStart()])
     add_entities([PowerOutageSensorEnd()])
@@ -40,7 +40,7 @@ class PowerOutageSensorStart(SensorEntity):
     _attr_state_class = None
 
     def update(self):     
-        self._attr_native_value = get_next_outage_date(latitude, longtitude, True)      
+        self._attr_native_value = get_next_outage_date(latitude, longitude, True)      
 
 
 # Sensor used for representing next electricity outage
@@ -52,11 +52,11 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_state_class = None
 
     def update(self):
-        self._attr_native_value = get_next_outage_date(latitude, longtitude, False)      
+        self._attr_native_value = get_next_outage_date(latitude, longitude, False)      
 
-def get_next_outage_date(latitude, longtitude, start):
+def get_next_outage_date(latitude, longitude, start):
     # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longtitude}&zoom=18&format=jsonv2"
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
         try:
@@ -101,7 +101,7 @@ def get_next_outage_date(latitude, longtitude, start):
     def update(self):
         
         # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self._latitude}&lon={self._longtitude}&zoom=18&format=jsonv2"
+        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self._latitude}&lon={self._longitude}&zoom=18&format=jsonv2"
         OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
         try:
