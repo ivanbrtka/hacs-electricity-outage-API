@@ -6,6 +6,8 @@ from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
 
 _LOGGER = logging.getLogger(__name__)
 
+DOMAIN="power_outages"
+
 # Basic sensor setup
 async def async_setup(hass, config, async_add_entities, discovery_info=None):
     
