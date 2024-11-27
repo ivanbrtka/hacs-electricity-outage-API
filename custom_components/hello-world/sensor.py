@@ -96,6 +96,7 @@ def get_next_outage_date(latitude, longitude, start):
         
         except Exception as e:
             _LOGGER.error("Error fetching power outage data: %s", e)
+            _LOGGER.error(f"Data: {outage_data_json}")
 '''
     # Fetch new data from API 
     def update(self):
