@@ -37,6 +37,11 @@ class PowerOutageSensorStart(SensorEntity):
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
 
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+        self._attr_native_value = None
+
     def update(self):     
         # URL of power outage data API and reverse GPS Lookup API
         REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self.latitude}&lon={self.longitude}&zoom=18&format=jsonv2"
@@ -83,6 +88,11 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_name = "Next Power Outage End Date"
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
+
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+        self._attr_native_value = None
 
     def update(self):
         # URL of power outage data API and reverse GPS Lookup API
