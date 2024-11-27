@@ -13,6 +13,8 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN="power_outages"
+latitude = 0
+longtitude = 0
 
 # Basic sensor setup
 def setup_platform(
@@ -24,7 +26,7 @@ def setup_platform(
     
     # Use GPS data from Home Assistant config data
     latitude = hass.config.latitude
-    longitude = hass.config.longitude
+    longtitude = hass.config.longtitude
 
     add_entities([PowerOutageSensorStart()])
     add_entities([PowerOutageSensorEnd()])
@@ -32,25 +34,17 @@ def setup_platform(
 # Sensor used for representing next electricity outage
 class PowerOutageSensorStart(SensorEntity):
 
-    # Use GPS data from Home Assistant config data
-    _latitude = 48.818372
-    _longtitude = 17.792674
-
     # Define basic attributes
     _attr_name = "Next Power Outage Start Date"
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
 
     def update(self):     
-        self._attr_native_value = get_next_outage_date(self._latitude, self._longtitude, True)      
+        self._attr_native_value = get_next_outage_date(latitude, longtitude, True)      
 
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensorEnd(SensorEntity):
-
-    # Use GPS data from Home Assistant config data
-    _latitude = 48.818372
-    _longtitude = 17.792674
 
     # Define basic attributes
     _attr_name = "Next Power Outage End Date"
@@ -58,7 +52,7 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_state_class = None
 
     def update(self):
-        self._attr_native_value = get_next_outage_date(self._latitude, self._longtitude, False)      
+        self._attr_native_value = get_next_outage_date(latitude, longtitude, False)      
 
 def get_next_outage_date(latitude, longtitude, start):
     # URL of power outage data API and reverse GPS Lookup API
