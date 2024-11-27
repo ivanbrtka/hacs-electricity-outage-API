@@ -1,48 +1,44 @@
 from datetime import datetime, timedelta
 import requests, logging, json
 
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
+from __future__ import annotations
 
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
+from homeassistant.const import UnitOfTemperature
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN="power_outages"
 
 # Basic sensor setup
-async def async_setup(hass, config, async_add_entities, discovery_info=None):
+def setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None
+) -> None:
     
     # Use GPS data from Home Assistant config data
     latitude = hass.config.latitude
     longitude = hass.config.longitude
 
-    async_add_entities([PowerOutageSensor(latitude, longitude)])
+    add_entities([PowerOutageSensor()])
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensor(SensorEntity):
 
     # Define basic attributes
-    def __init__(self, latitude, longitude):
-        self._latitude = latitude
-        self._longitude = longitude
-        self._state = None
-        self._attributes = {}
-
-    # Sensor name
-    @property
-    def name(self):
-        return "Next power outage on your address"
-
-    # Sensor state
-    @property
-    def state(self):
-        return self._state
-
-
-    # Extra attributes
-    @property
-    def extra_state_attributes(self):
-        return self._attributes
-
+    _attr_name = "Example Temperature"
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _attr_state_class = SensorStateClass.MEASUREMENT
+'''
     # Fetch new data from API 
     def update(self):
         
@@ -89,3 +85,4 @@ class PowerOutageSensor(SensorEntity):
         except Exception as e:
             _LOGGER.error("Error fetching power outage data: %s", e)
             self._state = "Error"
+    '''
