@@ -1,7 +1,7 @@
 {
-  "name": "Hello World",
-  "description": "A simple 'Hello World' integration",
-  "domain": "hello_world",
+  "name": "Electricity Outage API",
+  "description": "Integration for notifying user of any electricity outage in 30 days",
+  "domain": "power_outages",
   "codeowners": ["@ivanbrtka"],
   "documentation": "https://github.com/ivanbrtka/hacs-integration-test",
   "requirements": [],

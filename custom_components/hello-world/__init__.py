@@ -1,7 +1,10 @@
-import logging
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType
 
-_LOGGER = logging.getLogger(__name__)
+DOMAIN = "power_outages"
 
-def setup(hass, config):
-    _LOGGER.info("Hello World from the custom component!")
+async def async_setup(hass: HomeAssistant, config: ConfigType):
+    """Set up the integration."""
+    # Register a service for updating location (voliteľné)
+    hass.states.async_set(f"{DOMAIN}.status", "No data")
     return True

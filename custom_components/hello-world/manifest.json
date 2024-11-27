@@ -1,9 +1,11 @@
 {
-  "domain": "hello_world",
-  "name": "Hello World",
-  "version": "1.0",
-  "documentation": "https://www.example.com",
-  "dependencies": [],
-  "codeowners": [],
-  "requirements": []
+  "name": "Electricity Outage API",
+  "description": "Integration for notifying user of any electricity outage in 30 days",
+  "domain": "power_outages",
+  "codeowners": ["@ivanbrtka"],
+  "documentation": "https://github.com/ivanbrtka/hacs-integration-test",
+  "requirements": [],
+  "homeassistant": "2021.12.0",
+  "version": "1.0.0",
+  "issue_tracker": "https://github.com/ivanbrtka/hacs-integration-test/issues"
 }
