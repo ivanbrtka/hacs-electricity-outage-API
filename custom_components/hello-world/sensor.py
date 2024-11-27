@@ -41,6 +41,11 @@ class PowerOutageSensor(SensorEntity):
     def extra_state_attributes(self):
         return self._attributes
 
+    # Unique ID
+    @property
+    def unique_id(self):
+        return f"power_outages_sensor"
+
     # Fetch new data from API 
     def update(self):
         
