@@ -90,9 +90,18 @@ def fetch_data_from_api(latitude, longitude, start):
 
         # Get basic location informations from data and remove space in postcode
         postcode = gps_data_json['address']['postcode']
-        city = gps_data_json['address']['village']
         postcode = postcode.replace(" ", "")
 
+        try:
+            city = gps_data_json['address']['village']
+        except:
+            pass
+
+        try:
+            city = gps_data_json['address']['city']
+        except:
+            pass
+        
         # Data structure for electricity outage API
         home_location_params = {
             "data": {
