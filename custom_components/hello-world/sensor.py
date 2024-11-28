@@ -111,6 +111,7 @@ def fetch_data_from_api(latitude, longitude, start):
 
         # Parse outage data to JSON
         outage_data_json = json.loads(response.text)
+        _LOGGER.warning(outage_data_json)
 
         # If data exists, select start or end date based on selection
         if outage_data_json:
