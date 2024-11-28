@@ -116,11 +116,12 @@ def fetch_data_from_api(latitude, longitude, start):
         # If data exists, select start or end date based on selection
         if outage_data_json:
             if start:
-                next_electricity_outage = outage_data_json[0]['realStart']
+                next_electricity_outage = outage_data_json[0]['start']
             else: 
-                next_electricity_outage = outage_data_json[0]['realEnd']
+                next_electricity_outage = outage_data_json[0]['end']
 
-            return datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
+            dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
+            return dt
         
         # If no data exists, return None
         else: 
