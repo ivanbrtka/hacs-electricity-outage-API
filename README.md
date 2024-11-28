@@ -1,6 +1,6 @@
 # Power Outage Checker
 
-This is a custom integration for Home Assistant to notifying user of any electricity outage in 30 days.
+This custom integration for Home Assistant provides notifications about upcoming electricity outages within the next 30 days. It is designed specifically for the Slovakia region, covering both eastern and western Slovakia. The integration automatically retrieves data from an API based on the current location of your Home Assistant instance.
 
 ## Installation
 
@@ -14,7 +14,5 @@ Add the following to your `configuration.yaml`:
 
 ```yaml
 sensor:
-  - platform: my_power_outages
-    latitude: 48.1486
-    longitude: 17.1077
+  - platform: power_outages
 ```
