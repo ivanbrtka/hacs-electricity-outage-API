@@ -10,8 +10,11 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+
+# Initiate logger
 _LOGGER = logging.getLogger(__name__)
 
+# Define domain
 DOMAIN="power_outages"
 
 # Basic sensor setup
@@ -26,6 +29,7 @@ def setup_platform(
     latitude = hass.config.latitude
     longitude = hass.config.longitude
 
+    # Create new instances of sensors
     add_entities([PowerOutageSensorStart(latitude, longitude)])
     add_entities([PowerOutageSensorEnd(latitude, longitude)])
 
@@ -37,50 +41,18 @@ class PowerOutageSensorStart(SensorEntity):
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
 
+    # Start date sensor constructor
     def __init__(self, latitude, longitude):
+
+        # Call constructor of parent class
         super().__init__()
         self.latitude = latitude
         self.longitude = longitude
         self._attr_native_value = None
 
-    def update(self):     
-        # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self.latitude}&lon={self.longitude}&zoom=18&format=jsonv2"
-        OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
-
-        try:
-            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-            gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
-            gps_data_json = json.loads(gps_data.text)
-
-            postcode = gps_data_json['address']['postcode']
-            city = gps_data_json['address']['village']
-            postcode = postcode.replace(" ", "")
-
-            home_location_params = {
-                "data": {
-                    "OBEC":f"{city}",
-                    "PSC":f"{postcode}",
-                    "ULICA":"",
-                    "CISLO_DOMU":"",
-                    "EIC":"",
-                    "CISLO_ELEKTROMERA":""  
-                    }
-                }
-            response = requests.post(OUTAGE_API_URL, json=home_location_params, headers=headers, timeout=10)
-            response.raise_for_status()
-
-            outage_data_json = json.loads(response.text)
-
-            if outage_data_json:
-                next_electricity_outage_start = outage_data_json[0]['realStart']
-                self._attr_native_value = datetime.strptime(next_electricity_outage_start, '%Y-%m-%dT%H:%M:%S%z')
-                
-        
-        except Exception as e:
-            _LOGGER.error("Error fetching power outage data: %s", e)
-            self._state = "Error"         
-
+    # Update value of sensor
+    def update(self):
+        self._attr_native_value = fetch_data_from_api(self.latitude, self.longitude, True)     
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensorEnd(SensorEntity):
@@ -90,96 +62,69 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_device_class = SensorDeviceClass.DATE
     _attr_state_class = None
 
+     # End date sensor constructor
     def __init__(self, latitude, longitude):
+
+         # Call constructor of parent class
         super().__init__()
         self.latitude = latitude
         self.longitude = longitude
         self._attr_native_value = None
 
+    # Update value of sensor
     def update(self):
-        # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self.latitude}&lon={self.longitude}&zoom=18&format=jsonv2"
-        OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
+        self._attr_native_value = fetch_data_from_api(self.latitude, self.longitude, False)     
 
-        try:
-            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-            gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
-            gps_data_json = json.loads(gps_data.text)
 
-            postcode = gps_data_json['address']['postcode']
-            city = gps_data_json['address']['village']
-            postcode = postcode.replace(" ", "")
+# Get location data from HA configuration and request additional geolocation data from API. Based on this data, call API for upcoming power outages on your location
+def fetch_data_from_api(latitude, longitude, start):
+    # URL of power outage data API and reverse GPS Lookup API
+    REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={latitude}&lon={longitude}&zoom=18&format=jsonv2"
+    OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
 
-            home_location_params = {
-                "data": {
-                    "OBEC":f"{city}",
-                    "PSC":f"{postcode}",
-                    "ULICA":"",
-                    "CISLO_DOMU":"",
-                    "EIC":"",
-                    "CISLO_ELEKTROMERA":""  
-                    }
+    try:
+        # Set headers for valid request and parse request as JSON
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
+        gps_data_json = json.loads(gps_data.text)
+
+        # Get basic location informations from data and remove space in postcode
+        postcode = gps_data_json['address']['postcode']
+        city = gps_data_json['address']['village']
+        postcode = postcode.replace(" ", "")
+
+        # Data structure for electricity outage API
+        home_location_params = {
+            "data": {
+                "OBEC":f"{city}",
+                "PSC":f"{postcode}",
+                "ULICA":"",
+                "CISLO_DOMU":"",
+                "EIC":"",
+                "CISLO_ELEKTROMERA":""  
                 }
-            response = requests.post(OUTAGE_API_URL, json=home_location_params, headers=headers, timeout=10)
-            response.raise_for_status()
-
-            outage_data_json = json.loads(response.text)
-
-            if outage_data_json:
-                next_electricity_outage_end = outage_data_json[0]['realEnd']
-                self._attr_native_value = datetime.strptime(next_electricity_outage_end, '%Y-%m-%dT%H:%M:%S%z')
-                
+            }
         
-        except Exception as e:
-            _LOGGER.error("Error fetching power outage data: %s", e)
-            self._state = "Error"      
+        # Send POST request to API and fetch response
+        response = requests.post(OUTAGE_API_URL, json=home_location_params, headers=headers, timeout=10)
+        response.raise_for_status()
 
+        # Parse outage data to JSON
+        outage_data_json = json.loads(response.text)
 
-'''
-    # Fetch new data from API 
-    def update(self):
+        # If data exists, select start or end date based on selection
+        if outage_data_json:
+            if start:
+                next_electricity_outage = outage_data_json[0]['realStart']
+            else: 
+                next_electricity_outage = outage_data_json[0]['realEnd']
+
+            return datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
         
-        # URL of power outage data API and reverse GPS Lookup API
-        REVERSE_GPS_URL=f"https://nominatim.openstreetmap.org/reverse.php?lat={self._latitude}&lon={self._longitude}&zoom=18&format=jsonv2"
-        OUTAGE_API_URL="https://www.vypadokelektriny.sk/api/data/outages30days/address"
-
-        try:
-            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-            gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
-            gps_data_json = json.loads(gps_data.text)
-
-            postcode = gps_data_json['address']['postcode']
-            city = gps_data_json['address']['village']
-            postcode = postcode.replace(" ", "")
-
-            home_location_params = {
-                "data": {
-                    "OBEC":f"{city}",
-                    "PSC":f"{postcode}",
-                    "ULICA":"",
-                    "CISLO_DOMU":"",
-                    "EIC":"",
-                    "CISLO_ELEKTROMERA":""  
-                    }
-                }
-            response = requests.post(OUTAGE_API_URL, json=home_location_params, headers=headers, timeout=10)
-            response.raise_for_status()
-
-            outage_data_json = json.loads(response.text)
-
-            if outage_data_json:
-                next_electricity_outage_start = outage_data_json[0]['realStart']
-                next_electricity_outage_end = outage_data_json[0]['realEnd']
-                self._state = "Outage detected"
-                self._attributes = {
-                    "next_outage_start": next_electricity_outage_start,
-                    "next_outage_end": next_electricity_outage_end,
-                }
-            else:
-                self._state = "No outages"
-                self._attributes = {"message": "No outages in the next 30 days"}
-        
-        except Exception as e:
-            _LOGGER.error("Error fetching power outage data: %s", e)
-            self._state = "Error"
-    '''
+        # If no data exists, return None
+        else: 
+            return None
+    
+    # Case of error
+    except Exception as e:
+        _LOGGER.error("Error fetching power outage data: %s", e)
