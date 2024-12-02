@@ -56,7 +56,6 @@ class PowerOutageSensorStart(SensorEntity):
         dt = fetch_data_from_api(self.latitude, self.longitude, True) 
         if dt:
             self._attr_native_value = dt.strftime("%A, %B %d, %Y, %I:%M %p")
-  
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensorEnd(SensorEntity):
