@@ -137,7 +137,7 @@ def fetch_data_from_api(latitude, longitude, start):
             # Try to parse date string into datetime python data type
             try:
                 dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
-            except:
+            except Exception as e:
                 _LOGGER.error("Date format error: %s", e)
 
             return dt
