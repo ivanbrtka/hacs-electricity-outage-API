@@ -84,7 +84,7 @@ def fetch_data_from_api(latitude, longitude, start):
 
     try:
         # Set headers for valid request and parse request as JSON
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36', 'Content-Type': 'application/json'}
         gps_data = requests.get(REVERSE_GPS_URL, headers=headers, timeout=10)
         gps_data_json = json.loads(gps_data.text)
 
@@ -132,7 +132,7 @@ def fetch_data_from_api(latitude, longitude, start):
 
             # Append a timezone offset if missing
             if next_electricity_outage[-1] != 'Z' and '+' not in next_electricity_outage and '-' not in next_electricity_outage:
-                next_electricity_outage += '+00:00'         
+                next_electricity_outage += '+01:00'         
             
             # Try to parse date string into datetime python data type
             try:
