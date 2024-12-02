@@ -63,7 +63,7 @@ class PowerOutageSensorEnd(SensorEntity):
 
     # Define basic attributes
     _attr_name = "Next Power Outage End Date"
-    _attr_device_class = SensorDeviceClass.NONE
+    _attr_device_class = None
     _attr_state_class = None
 
      # End date sensor constructor
