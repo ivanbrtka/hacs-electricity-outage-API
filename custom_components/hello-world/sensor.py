@@ -50,6 +50,7 @@ class PowerOutageSensorStart(SensorEntity):
         self.longitude = longitude
         self._attr_native_value = None
         self._formatted_date = None
+        self._attr_unique_id = f"power_outage_end_{latitude}_{longitude}"
 
     # Update value of sensor
     def update(self):
@@ -81,6 +82,7 @@ class PowerOutageSensorEnd(SensorEntity):
         self.longitude = longitude
         self._attr_native_value = None
         self._formatted_date = None
+        self._attr_unique_id = f"power_outage_start_{latitude}_{longitude}"
 
     # Update value of sensor
     def update(self):
