@@ -53,7 +53,7 @@ class PowerOutageSensorStart(SensorEntity):
 
     # Update value of sensor
     def update(self):
-        dt = fetch_data_from_api(self.latitude, self.longitude, False) 
+        dt = fetch_data_from_api(self.latitude, self.longitude, True) 
         if dt:
             self._attr_native_value = dt.strftime("%A, %B %d, %Y, %I:%M %p")
   
@@ -65,7 +65,7 @@ class PowerOutageSensorEnd(SensorEntity):
     _attr_name = "Next Power Outage End Date"
     _attr_device_class = None
     _attr_state_class = None
-    
+
 
      # End date sensor constructor
     def __init__(self, latitude, longitude):
