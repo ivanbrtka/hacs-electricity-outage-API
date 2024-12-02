@@ -92,11 +92,13 @@ def fetch_data_from_api(latitude, longitude, start):
         postcode = gps_data_json['address']['postcode']
         postcode = postcode.replace(" ", "")
 
+        # Get name of the city if API returns its name in key village
         try:
             city = gps_data_json['address']['village']
         except:
             pass
 
+        # Get name of the city if API returns its name in key city
         try:
             city = gps_data_json['address']['city']
         except:
