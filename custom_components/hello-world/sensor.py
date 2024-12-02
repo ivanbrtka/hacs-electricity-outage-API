@@ -92,6 +92,9 @@ def fetch_data_from_api(latitude, longitude, start):
         postcode = gps_data_json['address']['postcode']
         postcode = postcode.replace(" ", "")
 
+        city = None
+        dt = None
+
         # Get name of the city if API returns its name in key village
         try:
             city = gps_data_json['address']['village']
@@ -131,7 +134,7 @@ def fetch_data_from_api(latitude, longitude, start):
                 next_electricity_outage = outage_data_json[0]['end']
 
             # Append a timezone offset if missing
-            if next_electricity_outage[-1] != 'Z' and '+' not in next_electricity_outage and '-' not in next_electricity_outage:
+            if next_electricity_outage[-1] != 'Z' and '+' not in next_electricity_outage:
                 next_electricity_outage += '+01:00'         
             
             # Try to parse date string into datetime python data type
