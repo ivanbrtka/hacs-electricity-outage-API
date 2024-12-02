@@ -130,7 +130,16 @@ def fetch_data_from_api(latitude, longitude, start):
             else: 
                 next_electricity_outage = outage_data_json[0]['end']
 
-            dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
+            # Append a timezone offset if missing
+            if next_electricity_outage[-1] != 'Z' and '+' not in next_electricity_outage and '-' not in next_electricity_outage:
+                next_electricity_outage += '+00:00'         
+            
+            # Try to parse date string into datetime python data type
+            try:
+                dt = datetime.strptime(next_electricity_outage, '%Y-%m-%dT%H:%M:%S%z')
+            except:
+                _LOGGER.error("Date format error: %s", e)
+
             return dt
         
         # If no data exists, return None
