@@ -56,12 +56,7 @@ class PowerOutageSensorStart(SensorEntity):
         dt = fetch_data_from_api(self.latitude, self.longitude, False) 
         if dt:
             self._attr_native_value = dt.strftime("%A, %B %d, %Y, %I:%M %p")
-
-    @property
-    def extra_state_attributes(self):
-        return {
-            "formatted_date": self._formatted_date
-        }    
+  
 
 # Sensor used for representing next electricity outage
 class PowerOutageSensorEnd(SensorEntity):
@@ -79,7 +74,6 @@ class PowerOutageSensorEnd(SensorEntity):
         self.latitude = latitude
         self.longitude = longitude
         self._attr_native_value = None
-        self._formatted_date = None
         self._attr_unique_id = f"power_outage_start_{latitude}_{longitude}"
 
     # Update value of sensor
@@ -88,11 +82,6 @@ class PowerOutageSensorEnd(SensorEntity):
         if dt:
             self._attr_native_value = dt.strftime("%A, %B %d, %Y, %I:%M %p")
 
-    @property
-    def extra_state_attributes(self):
-        return {
-            "formatted_date": self._formatted_date
-        }    
 
 
 # Get location data from HA configuration and request additional geolocation data from API. Based on this data, call API for upcoming power outages on your location
